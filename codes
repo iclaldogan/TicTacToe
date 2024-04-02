@@ -1,0 +1,103 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+using namespace std;
+
+void gboard(char board[3][3]) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            board[i][j] = '-';
+            cout << board[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+void userinput(int& x, int& y, char board[3][3]) {
+    cout << "Choose a place for X (1 1) : ";
+    cin >> x >> y;
+    x--; // Adjusting to 0-based indexing
+    y--; // Adjusting to 0-based indexing
+
+    if (x < 0 || x > 2 || y < 0 || y > 2 || board[x][y] != '-') {
+        cout << "Invalid move! Please try again." << endl;
+        userinput(x, y, board);
+    }
+    else {
+        board[x][y] = 'X';
+    }
+}
+
+void computer(int& x, int& y, char board[3][3]) {
+    do {
+        x = rand() % 3;
+        y = rand() % 3;
+    } while (board[x][y] != '-');
+    board[x][y] = 'O';
+}
+
+bool checkWin(char board[3][3]) {
+    
+    for (int i = 0; i < 3; i++) {
+        if (board[i][0] == board[i][1] && board[i][1] == board[i][2] && board[i][0] != '-') {
+            return true;
+        }
+        if (board[0][i] == board[1][i] && board[1][i] == board[2][i] && board[0][i] != '-') {
+            return true;
+        }
+    }
+
+    // Check diagonals
+    if ((board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] != '-') ||
+        (board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[0][2] != '-')) {
+        return true;
+    }
+
+    return false;
+}
+
+void displayBoard(char board[3][3]) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            cout << board[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+int main() {
+    srand(time(NULL));
+    cout << "Let's start the game!" << endl;
+    char board[3][3];
+    gboard(board);
+
+    int turn = 0;
+    bool win = false;
+
+    while (!win && turn < 9) {
+        int x, y;
+        if (turn % 2 == 0) {
+            userinput(x, y, board);
+        }
+        else {
+            computer(x, y, board);
+        }
+        displayBoard(board);
+        win = checkWin(board);
+        turn++;
+    }
+
+    if (win) {
+        if (turn % 2 == 0) {
+            cout << "Computer wins!" << endl;
+        }
+        else {
+            cout << "Player wins!" << endl;
+        }
+    }
+    else {
+        cout << "It's a draw!" << endl;
+    }
+
+    return 0;
+}
